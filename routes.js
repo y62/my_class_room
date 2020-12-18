@@ -6,8 +6,14 @@ const path = require('path');
 const ejs = require('ejs');
 const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
-const app = express();
 const port = 8080;
+
+const socketPort = 3000;
+const app = require('express')();
+const http = require('http').createServer(app);
+const io = require('socket.io')(http);
+
+
 
 const database = require('./database');
 app.use(express.static("frontend"));
@@ -23,10 +29,10 @@ app.use(session({
     saveUninitialized: true
 }));
 
-app.get('/', (req, res) => {
-    return res.sendFile(path.join(__dirname + '/frontend/index.html'));
+app.get('/login', (req, res) => {
+    return res.sendFile(path.join(__dirname + '/frontend/indexlogin.html'));
 });
-
+var emoil = "";
 app.post('/auth', function(req, res) {
     const email = req.body.email;
     const password = req.body.password;
@@ -47,6 +53,7 @@ app.post('/auth', function(req, res) {
             if (bcrypt.compareSync(password, encryptedPassword) === true)  {
                 req.session.loggedin = true;
                 req.session.email = email;
+                emoil = email;
                 res.redirect('/home.html');
             } else {
                 res.redirect("/");
@@ -123,8 +130,19 @@ app.post('/save',  (req, res) => {
     });
 });
 
-app.get("/", (req, res) =>  {
-    res.sendFile(__dirname + "index.html");
+app.get('/', function(req, res){
+    res.sendFile(__dirname + '/index.html');
+});
+
+
+io.on('connection', function(socket) {
+    socket.on('chat message', function(msg) {
+        io.emit('chat message', emoil + ": " + msg);
+    });
+});
+
+http.listen(socketPort, () => {
+    console.log("Listening on port", socketPort);
 });
 
 
