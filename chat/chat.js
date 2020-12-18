@@ -3,12 +3,12 @@ const path = require('path');
 const app  = require('express')();
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
+const port = 3000;
 
-
-const port    = 3000;
 
 // for socket io
 app.use('/resources', express.static(path.join(__dirname, 'resources')));
+
 
 const chatBot = 'Admin';
 

@@ -1,16 +1,16 @@
 const express = require("express");
-const mysql = require('mysql');
 const session = require('express-session');
 const bodyParser = require('body-parser');
 const path = require('path');
-const ejs = require('ejs');
+//const ejs = require('ejs');
 const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
 const port = 8080;
 
 const app = require('express')();
-
 const database = require('./database');
+
+
 app.use(express.static("frontend"));
 app.use(bodyParser.urlencoded({extended : true}));
 app.use(bodyParser.json());
@@ -18,15 +18,18 @@ app.use(bodyParser.json());
 app.set('views',path.join(__dirname,'frontend/views'));
 app.set('view engine', 'ejs');
 
+
 app.use(session({
     secret: 'secret',
     resave: true,
     saveUninitialized: true
 }));
 
+
 app.get('/', (req, res) => {
     return res.sendFile(path.join(__dirname + '/frontend/login.html'));
 });
+
 
 app.post('/auth', (req, res) => {
     const email = req.body.email;
@@ -35,21 +38,19 @@ app.post('/auth', (req, res) => {
     if (email && password) {
         let encryptedPassword = "";
         function getClearPassword() {
-            connection.query("SELECT password FROM students WHERE email = ?", [email, password], function (error, result, fields) {
-                console.log(result);
+            connection.query("SELECT password FROM users WHERE email = ?", [email, password],  (error, result, fields) => {
                 let passwordResult = JSON.stringify(result);
                 return encryptedPassword = passwordResult.substring(14, 74);
             });
         }
+
         getClearPassword();
 
-        connection.query('SELECT * FROM students WHERE email = ? AND password = ?', [email, password], function (error, results, fields) {
-            console.log(encryptedPassword);
+        connection.query('SELECT * FROM users WHERE email = ? AND password = ?', [email, password],  (error, results, fields) =>{
             if (bcrypt.compareSync(password, encryptedPassword) === true)  {
                 req.session.loggedin = true;
                 req.session.email = email;
-                emoil = email;
-                res.redirect('/activity.html');
+                res.redirect('/activity');
             } else {
                 res.redirect("/");
             }
@@ -76,12 +77,9 @@ app.get('/logout',(req,res) => {
 app.get('/activity',(req,res)=>{
     if(req.session.loggedin){
         res.sendFile(path.join(__dirname + '/frontend/activity.html'));
-    }
-});
-
-
-app.get('/home', (req, res) => {
-   return res.sendFile('/frontend/home.html');
+    } else {
+        res.redirect('/');
+        }
 });
 
 
@@ -110,6 +108,7 @@ function confirmationMail(confirmationAcc) {
     });
 }
 
+
 app.get('/signup', (req, res) => {
         res.render('sign_up', {
             title: 'Create a user'
@@ -117,14 +116,39 @@ app.get('/signup', (req, res) => {
 });
 
 
+app.get('/users',(req, res) => {
+    if (req.session.loggedin) {
+        let sql = "SELECT * FROM users";
+        let query = connection.query(sql, (err, rows) => {
+            if (err) throw err;
+            res.render('user_list.ejs', {
+                title: 'Users',
+                users: rows
+            });
+        });
+    } else {
+        res.redirect("/");
+    }
+});
+
+
+app.get('/delete/:userId',(req, res) => {
+    const userId = req.params.userId;
+    let sql = `DELETE from users where id = ${userId}`;
+    let query = connection.query(sql,(err, result) => {
+        if(err) throw err;
+        res.redirect('/users');
+    });
+});
+
+
 app.post('/save',  (req, res) => {
     const name = req.body.name;
     const email = req.body.email;
-    const encryptedPassword = req.body.password; //REMOVE ENCRYPTED PASS
+    const encryptedPassword = req.body.password;
     let password = bcrypt.hashSync(encryptedPassword, 10);
-    // let password = hash.toString();
     const data = {name, email, password};
-    let sql = "INSERT INTO students SET ?";
+    let sql = "INSERT INTO users SET ?";
     connection.query(sql, data,(err, results) => {
         if(err) throw err;
         res.redirect('/');
@@ -132,9 +156,6 @@ app.post('/save',  (req, res) => {
     });
 });
 
-app.get('/chat', (req, res) =>{
-    res.sendFile(__dirname + '/frontend/chat.html');
-});
 
 app.listen(port, () => {
     console.log("Server is running on port: ", port)
