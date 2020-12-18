@@ -8,12 +8,7 @@ const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
 const port = 8080;
 
-const socketPort = 3000;
 const app = require('express')();
-const http = require('http').createServer(app);
-const io = require('socket.io')(http);
-
-
 
 const database = require('./database');
 app.use(express.static("frontend"));
@@ -29,11 +24,11 @@ app.use(session({
     saveUninitialized: true
 }));
 
-app.get('/login', (req, res) => {
-    return res.sendFile(path.join(__dirname + '/frontend/indexlogin.html'));
+app.get('/', (req, res) => {
+    return res.sendFile(path.join(__dirname + '/frontend/login.html'));
 });
-var emoil = "";
-app.post('/auth', function(req, res) {
+
+app.post('/auth', (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
 
@@ -54,7 +49,7 @@ app.post('/auth', function(req, res) {
                 req.session.loggedin = true;
                 req.session.email = email;
                 emoil = email;
-                res.redirect('/home.html');
+                res.redirect('/activity.html');
             } else {
                 res.redirect("/");
             }
@@ -75,6 +70,13 @@ app.get('/logout',(req,res) => {
             res.redirect('/');
         }
     });
+});
+
+
+app.get('/activity',(req,res)=>{
+    if(req.session.loggedin){
+        res.sendFile(path.join(__dirname + '/frontend/activity.html'));
+    }
 });
 
 
@@ -108,9 +110,9 @@ function confirmationMail(confirmationAcc) {
     });
 }
 
-app.get('/add', (req, res) => {
+app.get('/signup', (req, res) => {
         res.render('sign_up', {
-            title: 'Create an user'
+            title: 'Create a user'
         });
 });
 
@@ -130,21 +132,9 @@ app.post('/save',  (req, res) => {
     });
 });
 
-app.get('/', function(req, res){
-    res.sendFile(__dirname + '/index.html');
+app.get('/chat', (req, res) =>{
+    res.sendFile(__dirname + '/frontend/chat.html');
 });
-
-
-io.on('connection', function(socket) {
-    socket.on('chat message', function(msg) {
-        io.emit('chat message', emoil + ": " + msg);
-    });
-});
-
-http.listen(socketPort, () => {
-    console.log("Listening on port", socketPort);
-});
-
 
 app.listen(port, () => {
     console.log("Server is running on port: ", port)
