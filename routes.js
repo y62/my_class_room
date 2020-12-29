@@ -18,7 +18,6 @@ app.use(bodyParser.json());
 app.set('views',path.join(__dirname,'frontend/views'));
 app.set('view engine', 'ejs');
 
-
 app.use(session({
     secret: 'secret',
     resave: true,
@@ -155,7 +154,6 @@ app.post('/save',  (req, res) => {
         confirmationMail(email);
     });
 });
-
 
 app.listen(port, () => {
     console.log("Server is running on port: ", port)
