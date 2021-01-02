@@ -26,7 +26,7 @@ io.on('connection', (socket) => {
     let UserID =  chatBot + ": New user is connected " ;
     socket.broadcast.emit('chat message', UserID);
     socket.on('chat message', (msg) => {
-        msg = socket.id + ' : ' + moment().format("Do MMM YYYY, h:mm a")+ ' : ' + msg;
+        msg = socket.id + ' : ' + moment().format("Do MMM YYYY, h:mm:ss a")+ ' : ' + msg;
 
 
         io.emit('chat message', msg);
