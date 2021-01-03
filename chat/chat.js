@@ -3,6 +3,7 @@ const path = require('path');
 const app  = require('express')();
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
+const moment = require('moment');
 const port = 3000;
 
 
@@ -25,7 +26,9 @@ io.on('connection', (socket) => {
     let UserID =  chatBot + ": New user is connected " ;
     socket.broadcast.emit('chat message', UserID);
     socket.on('chat message', (msg) => {
-        msg = socket.id + ' : ' + new Date() +' : '+ msg;
+        msg = socket.id + ' : ' + moment().format("DD MMM YYYY, h:mm:ss a")+ ' : ' + msg;
+
+
         io.emit('chat message', msg);
     });
 });
