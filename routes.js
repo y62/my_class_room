@@ -2,7 +2,6 @@ const express = require("express");
 const session = require('express-session');
 const bodyParser = require('body-parser');
 const path = require('path');
-//const ejs = require('ejs');
 const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
 const port = 8080;
@@ -35,15 +34,20 @@ app.post('/auth', (req, res) => {
     const password = req.body.password;
 
     if (email && password) {
-        let encryptedPassword = "";
+        let encryptedPassword ;
         function getClearPassword() {
             connection.query("SELECT password FROM users WHERE email = ?", [email, password],  (error, result, fields) => {
                 let passwordResult = JSON.stringify(result);
+                //console.log(result);
+                encryptedPassword = passwordResult.substring(14, 74);
+                //console.log(encryptedPassword);
                 return encryptedPassword = passwordResult.substring(14, 74);
+
             });
         }
 
         getClearPassword();
+
 
         connection.query('SELECT * FROM users WHERE email = ? AND password = ?', [email, password],  (error, results, fields) =>{
             if (bcrypt.compareSync(password, encryptedPassword) === true)  {
@@ -51,7 +55,7 @@ app.post('/auth', (req, res) => {
                 req.session.email = email;
                 res.redirect('/activity');
             } else {
-                res.redirect("/");
+                res.send('Incorrect Username or Password!');
             }
             res.end();
         });
@@ -144,17 +148,26 @@ app.get('/delete/:userId',(req, res) => {
 app.post('/save',  (req, res) => {
     const name = req.body.name;
     const email = req.body.email;
-    const encryptedPassword = req.body.password;
-    let password = bcrypt.hashSync(encryptedPassword, 10);
-    const data = {name, email, password};
+    const password = req.body.password;
+    let encryptedPassword = bcrypt.hashSync(password, 10);
+    const data = {name, email, encryptedPassword};
     let sql = "INSERT INTO users SET ?";
     connection.query(sql, data,(err, results) => {
-        if(err) throw err;
-        res.redirect('/');
-        confirmationMail(email);
+        if(err) {
+            res.redirect('/signup');
+            throw err;
+        } else{
+            res.redirect('/signup')
+            confirmationMail(email);}
     });
 });
 
-app.listen(port, () => {
-    console.log("Server is running on port: ", port)
+app.listen(port, (error) => {
+
+    if (error) {
+        console.log("There is an error starting the server !");
+    }
+    console.log("Server is running on port:", port);
+
+
 });
