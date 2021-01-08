@@ -2,13 +2,13 @@ const getData = document.querySelector('.btn-primary');
 let myData = [];
 
 
-getData.addEventListener('click', function (event){
+getData.addEventListener('click', function (event) {
     event.preventDefault();
     renderHTML(myData);
 });
 
 
-async function loadData(){
+async function loadData() {
     const response = await fetch("https://official-joke-api.appspot.com/jokes/ten");
     const apiData  = await response.json();
     return apiData;

@@ -168,6 +168,4 @@ app.listen(port, (error) => {
         console.log("There is an error starting the server !");
     }
     console.log("Server is running on port:", port);
-
-
 });
