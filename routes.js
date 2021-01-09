@@ -6,12 +6,11 @@ const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
 const port = 8080;
 
-const app = require('express')();
+const app = express();
 const database = require('./database');
 
-
 app.use(express.static("frontend"));
-app.use(bodyParser.urlencoded({extended : true}));
+app.use(bodyParser.urlencoded({extended : true})); //SE HER
 app.use(bodyParser.json());
 
 app.set('views',path.join(__dirname,'frontend/views'));
@@ -160,17 +159,6 @@ app.post('/save',  (req, res) => {
             confirmationMail(email);}
     });
 });
-
-app.get("/usersapi", ((req, res) => {
-   res.send([{id: 1, name: "Yousuf",
-   age: 26,
-   height: 188}, {
-       id: 2,
-       name: "Morten",
-       age: 22,
-       height: 180
-   }]);
-}));
 
 app.listen(port, (error) => {
 

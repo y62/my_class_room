@@ -1,5 +1,5 @@
 $(function(){
-    $('#btn_1').on("click", function (){
+    $('#btn_1').on("click", function () {
         const url = "https://raw.githubusercontent.com/y62/nodejs_exam_project/test/frontend/logincontent.html"
 
       $.ajax(url, {

@@ -175,3 +175,7 @@ div.container{
     background: var(--dark-color-b);
     align-content: center;
 }
+
+#btn_1 {
+    font-size: 50px;
+}
