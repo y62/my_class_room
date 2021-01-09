@@ -77,8 +77,8 @@ app.get('/logout',(req,res) => {
 });
 
 
-app.get('/activity',(req,res)=>{
-    if(req.session.loggedin){
+app.get('/activity',(req,res) => {
+    if(req.session.loggedin) {
         res.sendFile(path.join(__dirname + '/frontend/activity.html'));
     } else {
         res.redirect('/');
@@ -144,7 +144,6 @@ app.get('/delete/:userId',(req, res) => {
     });
 });
 
-
 app.post('/save',  (req, res) => {
     const name = req.body.name;
     const email = req.body.email;
@@ -161,6 +160,17 @@ app.post('/save',  (req, res) => {
             confirmationMail(email);}
     });
 });
+
+app.get("/usersapi", ((req, res) => {
+   res.send([{id: 1, name: "Yousuf",
+   age: 26,
+   height: 188}, {
+       id: 2,
+       name: "Morten",
+       age: 22,
+       height: 180
+   }]);
+}));
 
 app.listen(port, (error) => {
 

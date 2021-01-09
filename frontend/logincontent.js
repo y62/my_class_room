@@ -1,5 +1,5 @@
 $(function(){
-    $('button').on("click", function (){
+    $('#btn_1').on("click", function (){
         const url = "https://raw.githubusercontent.com/y62/nodejs_exam_project/test/frontend/logincontent.html"
 
       $.ajax(url, {
@@ -7,12 +7,12 @@ $(function(){
          method: "GET",
          success: function (response) {
              $("div.main").html(response);
-             $('button').fadeOut(3000);
-         }
+             $('#btn_1').fadeOut(3000);
+         },
+          error: function (request, errorType, errorMsg) {
+             alert("ERROR: NO AJAX CALL: " + errorMsg);
+          }
       });
-
-      //  $("div.main").load(url);
-        // $('button').fadeOut(3000);
     });
 });
 
