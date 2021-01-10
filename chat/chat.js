@@ -18,7 +18,7 @@ app.get('/chat', (req, res) => {
 });
 
 server.listen(port ,() =>{
-    console.log('Server is running on port:' ,port)
+    console.log('Chat is running on port:', port)
 });
 
 io.on('connection', (socket) => {
