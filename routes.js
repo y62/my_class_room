@@ -146,9 +146,9 @@ app.get('/delete/:userId',(req, res) => {
 app.post('/save',  (req, res) => {
     const name = req.body.name;
     const email = req.body.email;
-    const password = req.body.password;
-    let encryptedPassword = bcrypt.hashSync(password, 10);
-    const data = {name, email, encryptedPassword};
+    const plainPassword = req.body.password;
+    let password = bcrypt.hashSync(plainPassword, 10);
+    const data = {name, email, password};
     let sql = "INSERT INTO users SET ?";
     connection.query(sql, data,(err, results) => {
         if(err) {
