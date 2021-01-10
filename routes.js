@@ -6,12 +6,11 @@ const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
 const port = 8080;
 
-const app = require('express')();
+const app = express();
 const database = require('./database');
 
-
 app.use(express.static("frontend"));
-app.use(bodyParser.urlencoded({extended : true}));
+app.use(bodyParser.urlencoded({extended : true})); //SE HER
 app.use(bodyParser.json());
 
 app.set('views',path.join(__dirname,'frontend/views'));
@@ -77,12 +76,12 @@ app.get('/logout',(req,res) => {
 });
 
 
-app.get('/activity',(req,res)=>{
-    if(req.session.loggedin){
+app.get('/activity',(req,res) => {
+    if(req.session.loggedin) {
         res.sendFile(path.join(__dirname + '/frontend/activity.html'));
     } else {
         res.redirect('/');
-        }
+    }
 });
 
 
@@ -113,9 +112,9 @@ function confirmationMail(confirmationAcc) {
 
 
 app.get('/signup', (req, res) => {
-        res.render('sign_up', {
-            title: 'Create a user'
-        });
+    res.render('sign_up', {
+        title: 'Create a user'
+    });
 });
 
 
@@ -144,7 +143,6 @@ app.get('/delete/:userId',(req, res) => {
     });
 });
 
-
 app.post('/save',  (req, res) => {
     const name = req.body.name;
     const email = req.body.email;
@@ -168,6 +166,4 @@ app.listen(port, (error) => {
         console.log("There is an error starting the server !");
     }
     console.log("Server is running on port:", port);
-
-
 });
