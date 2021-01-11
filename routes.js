@@ -1,9 +1,9 @@
 const express = require("express");
 const session = require('express-session');
+const nodemailer = require('nodemailer');
 const bodyParser = require('body-parser');
 const path = require('path');
 const bcrypt = require('bcrypt');
-const nodemailer = require('nodemailer');
 const port = 8080;
 
 const app = express();
@@ -33,22 +33,18 @@ app.post('/auth', (req, res) => {
     const password = req.body.password;
 
     if (email && password) {
-        let encryptedPassword ;
+        let encryptedPassword;
+
         function getClearPassword() {
             connection.query("SELECT password FROM users WHERE email = ?", [email, password],  (error, result, fields) => {
                 let passwordResult = JSON.stringify(result);
-                //console.log(result);
-                encryptedPassword = passwordResult.substring(14, 74);
-                //console.log(encryptedPassword);
                 return encryptedPassword = passwordResult.substring(14, 74);
-
             });
         }
 
         getClearPassword();
 
-
-        connection.query('SELECT * FROM users WHERE email = ? AND password = ?', [email, password],  (error, results, fields) =>{
+        connection.query('SELECT * FROM users WHERE email = ? AND password = ?', [email, password],  (error, result, fields) =>{
             if (bcrypt.compareSync(password, encryptedPassword) === true)  {
                 req.session.loggedin = true;
                 req.session.email = email;
@@ -163,7 +159,7 @@ app.post('/save',  (req, res) => {
 app.listen(port, (error) => {
 
     if (error) {
-        console.log("There is an error starting the server !");
+        console.log("There is an error starting the server:", error);
     }
     console.log("Server is running on port:", port);
 });
