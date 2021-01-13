@@ -10,7 +10,7 @@ const app = express();
 const database = require('./database');
 
 app.use(express.static("frontend"));
-app.use(bodyParser.urlencoded({extended : true})); //SE HER
+app.use(bodyParser.urlencoded({extended : true}));
 app.use(bodyParser.json());
 
 app.set('views',path.join(__dirname,'frontend/views'));
